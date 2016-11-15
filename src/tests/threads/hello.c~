@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include "tests/threads/tests.h"
+#include "threads/malloc.h"
+#include "threads/synch.h"
+#include "threads/thread.h"
+#include "devices/timer.h"
+
+void
+
+int sum(int a, int b, int c){
+	return a, b, c;
+}
+
+test_hello(void){
+	printf("Hello 2012122256 \n");
+	int a, b, c, d;
+	a = 1;
+	b = 2;
+	c = 3;
+	d = sum(a, b, c);
+	printf("function ''sum'' is executed!! \n");
+}
