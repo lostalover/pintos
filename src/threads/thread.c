@@ -247,6 +247,7 @@ thread_create (const char *name, int priority,
 /*begin**********************************************/
   if( priority > thread_current()->priority)
     thread_yield();
+  //printf("thread_create start \n");
 /*end**********************************************/
   return tid;
 }
