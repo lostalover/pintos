@@ -42,7 +42,9 @@ process_execute (const char *file_name)
   if (fn_copy == NULL)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
-
+  char *save_ptr;
+  file_name = strtok_r((char *)file_name, " ", &save_ptr);
+  printf("file_name = %s\n", file_name);
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (file_name, PRI_DEFAULT + 1, start_process, fn_copy);
   if (tid == TID_ERROR)
@@ -61,6 +63,7 @@ start_process (void *file_name_)
 /*begin**********/
   char *save_ptr;
   file_name = strtok_r((char *)file_name, " ", &save_ptr);
+  printf("file_name = %s\n", file_name);
 /*end************/
 
   /* Initialize interrupt frame and load executable. */
@@ -244,7 +247,6 @@ load (const char *file_name, void (**eip) (void), void **esp, char **save_ptr)
 
   /* Open executable file. */
   file = filesys_open (file_name);
-  printf("file_name : %s\n", file_name);
   if (file == NULL) 
     {
       printf ("load: %s: open failed\n", file_name);
@@ -334,6 +336,7 @@ load (const char *file_name, void (**eip) (void), void **esp, char **save_ptr)
 
  done:
   /* We arrive here whether the load is successful or not. */
+  printf("success = %d\n", success);
   file_close (file);
   return success;
 }
@@ -465,14 +468,12 @@ setup_stack (void **esp, const char* file_name, char ** save_ptr)
         return success;
       }
     }
-  printf("*esp = %x\n", *esp);
+/*begin***********************************/
   char *token;
   char **argv = malloc(DEFAULT_ARGV*sizeof(char*));
   int i, argc = 0, argv_size = DEFAULT_ARGV;
-
   for(token = (char *)file_name; token != NULL; token = strtok_r(NULL, " ", save_ptr)){
     *esp -= strlen(token)+1;
-    printf("*esp = %x\n", *esp);
     argv[argc] = *esp;
     argc++;
     if(argc >= argv_size){
@@ -486,7 +487,6 @@ setup_stack (void **esp, const char* file_name, char ** save_ptr)
 
   if(i){
     *esp -= i;
-    printf("*esp = %x\n", *esp);
     memcpy(*esp, &argv[argc], i);
   }
 
@@ -508,8 +508,8 @@ setup_stack (void **esp, const char* file_name, char ** save_ptr)
   free(argv);
 
   hex_dump(*esp, *esp, (int)((size_t) PHYS_BASE - (size_t) *esp), true);
-  printf("*esp = %x\n", *esp);
   return success;
+/*end*************************************************/
 }
 
 /* Adds a mapping from user virtual address UPAGE to kernel
